@@ -49,21 +49,28 @@
 #import "PhotoCellViewController.h"
 
 // Helper function
-NSImage *cacheImageOfView(NSView *view);
+static NSImage *cacheImageOfView(NSView *view);
+
+@interface PhotoCellViewController ()
+
+@property (nonatomic, weak) IBOutlet NSImageView *photoView;
+@property (nonatomic, weak) IBOutlet NSTextField *labelView;
+
+@end
 
 @implementation PhotoCellViewController
 
-@synthesize photoView;
-@synthesize labelView;
+- (instancetype)init {
+	return [super initWithNibName:@"PhotoCellView" bundle:nil];
+}
 
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    
-    return self;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+	assert(!"Shouldn't call this initializer");
+	return [self init];
+}
+- (instancetype)initWithCoder:(NSCoder *)coder {
+	assert(!"Shouldn't call this initializer");
+	return [self init];
 }
 
 - (void)loadView {
@@ -75,10 +82,12 @@ NSImage *cacheImageOfView(NSView *view);
     MDItemRef mdItemRef = MDItemCreateWithURL(kCFAllocatorDefault, (CFURLRef)url);
     assert(mdItemRef);
     NSString *commentStr = (NSString*)CFBridgingRelease(MDItemCopyAttribute(mdItemRef, kMDItemFinderComment));
-    if (!commentStr) commentStr = @"";
+	if (!commentStr) {
+		commentStr = @"";
+	}
     CFRelease(mdItemRef);
     
-    PhotoCellViewController *pcvController = [[PhotoCellViewController alloc] initWithNibName:@"PhotoCellView" bundle:nil];
+    PhotoCellViewController *pcvController = [[PhotoCellViewController alloc] init];
     pcvController.representedObject = @{kImageUrlKey: url, kLabelKey: commentStr};
     [pcvController loadView];
     
@@ -105,13 +114,13 @@ NSImage *cacheImageOfView(NSView *view);
 
 /* This method is called by MultiPhotoView to generate the dragging image components. The dragging image components for a Photo Cell View consist of the matte background, photo image, and comment label.
 */
-- (NSArray*)imageComponentsForDrag {
+- (NSArray<NSDraggingImageComponent *> *)imageComponentsForDrag {
     NSDraggingImageComponent *imageComponent;
-    NSMutableArray *components = [NSMutableArray arrayWithCapacity:3];
+    NSMutableArray<NSDraggingImageComponent *> *components = [NSMutableArray array];
     
-    // Each dragging component image animates indpendantly. Since the photoView and labelView are subviews of the matte background view, we need to hide them so they are not included in the background image component snapshot.
-    [self.photoView setHidden:YES];
-    [self.labelView setHidden:YES];
+    // Each dragging component image animates independently. Since the photoView and labelView are subviews of the matte background view, we need to hide them so they are not included in the background image component snapshot.
+    self.photoView.hidden = YES;
+    self.labelView.hidden = YES;
     
     // dragging Image Components are painted from back to front, so but the background image first in the array.
     imageComponent = [NSDraggingImageComponent draggingImageComponentWithKey:@"background"];
@@ -120,8 +129,8 @@ NSImage *cacheImageOfView(NSView *view);
     [components addObject:imageComponent];
     
     // The matte background image snapshot is complete, we can show these views again.
-    [self.photoView setHidden:NO];
-    [self.labelView setHidden:NO];
+    self.photoView.hidden = NO;
+    self.labelView.hidden = NO;
     
     // snapshot the photo image
     imageComponent = [NSDraggingImageComponent draggingImageComponentWithKey:NSDraggingImageComponentIconKey];
@@ -141,7 +150,7 @@ NSImage *cacheImageOfView(NSView *view);
 @end
 
 
-NSImage *cacheImageOfView(NSView *view) {
+static NSImage *cacheImageOfView(NSView *view) {
     NSRect bounds = view.bounds;
     NSBitmapImageRep *bitmapImageRep = [view bitmapImageRepForCachingDisplayInRect:bounds];
     bzero(bitmapImageRep.bitmapData, bitmapImageRep.bytesPerRow * bitmapImageRep.pixelsHigh);

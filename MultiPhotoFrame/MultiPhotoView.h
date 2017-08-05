@@ -52,17 +52,5 @@
 
 @import Cocoa;
 
-@class PhotoCellViewController;
-
-@interface MultiPhotoView : NSView <NSDraggingSource, NSDraggingDestination> {
-    NSMutableArray *photoCellViewControllers;
-    NSArray *leavingPhotoCellViewControllers;
-    
-    PhotoCellViewController *draggingPcvController;
-    BOOL dragIsInView;
-    BOOL highlightForDragAcceptence;
-}
-
-
-@property(copy) NSArray *photoCellViewControllers;
+@interface MultiPhotoView : NSView
 @end

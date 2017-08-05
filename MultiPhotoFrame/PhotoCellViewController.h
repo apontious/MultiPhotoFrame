@@ -48,24 +48,20 @@
 
 @import Cocoa;
 
-typedef NS_ENUM(NSInteger, PhotoCellOrientation) {
+typedef NS_ENUM(NSUInteger, PhotoCellOrientation) {
     kPhotoCellOrientationLandscape = 0,
     kPhotoCellOrientationPortrait
 };
 
-@interface PhotoCellViewController : NSViewController {
-    NSImageView *__weak photoView;
-    NSTextField *__weak labelView;
-}
+@interface PhotoCellViewController : NSViewController
 
-@property(weak) IBOutlet NSImageView *photoView;
-@property(weak) IBOutlet NSTextField *labelView;
+@property (readonly) PhotoCellOrientation photoCellOrientation;
 
-@property(assign, readonly) PhotoCellOrientation photoCellOrientation;
-
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (PhotoCellViewController *)photoCellViewControllerWithURL:(NSURL *)url;
-@property (nonatomic, readonly, copy) NSArray *imageComponentsForDrag;
+
+@property (nonatomic, readonly, copy) NSArray<NSDraggingImageComponent *> *imageComponentsForDrag;
 
 @end
 

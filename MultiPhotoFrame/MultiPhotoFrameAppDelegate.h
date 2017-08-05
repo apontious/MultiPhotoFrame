@@ -48,10 +48,12 @@
 
 @import Cocoa;
 
-@interface MultiPhotoFrameAppDelegate : NSObject <NSApplicationDelegate> {
-    NSWindow *__weak window;
-}
+@class MultiPhotoView;
 
-@property (weak) IBOutlet NSWindow *window;
+@interface MultiPhotoFrameAppDelegate : NSObject
+
+@property (class, readonly, nonatomic) MultiPhotoFrameAppDelegate *sharedAppDelegate;
+
+@property (nonatomic, readonly, strong) MultiPhotoView *newMultiPhotoView;
 
 @end

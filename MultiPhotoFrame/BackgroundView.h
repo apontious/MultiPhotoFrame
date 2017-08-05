@@ -48,9 +48,5 @@
 
 @import Cocoa;
 
-@interface BackgroundView : NSView {
-    NSColor *backgroundColor;
-}
-
-@property(copy) NSColor *backgroundColor;
+@interface BackgroundView : NSView
 @end

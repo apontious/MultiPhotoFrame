@@ -48,17 +48,18 @@
 
 #import "BackgroundView.h"
 
-#define kCornerRadius 5
+static const CGFloat kCornerRadius = 5.0;
+
+@interface BackgroundView ()
+@property (nonatomic, copy) NSColor *backgroundColor;
+@end
 
 @implementation BackgroundView
 
-@synthesize backgroundColor;
-
-- (instancetype)initWithFrame:(NSRect)frame
-{
+- (instancetype)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [NSColor lightGrayColor];
+        self.backgroundColor = NSColor.lightGrayColor;
     }
     
     return self;

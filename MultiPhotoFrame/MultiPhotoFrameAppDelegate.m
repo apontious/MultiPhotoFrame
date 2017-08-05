@@ -48,19 +48,50 @@
 
 #import "MultiPhotoFrameAppDelegate.h"
 
+#import "MultiPhotoView.h"
+
+@interface MultiPhotoFrameAppDelegate () <NSApplicationDelegate>
+@property (nonatomic) NSMutableArray<NSWindowController *> *windowControllers;
+@end
+
 @implementation MultiPhotoFrameAppDelegate
 
-@synthesize window;
++ (MultiPhotoFrameAppDelegate *)sharedAppDelegate {
+	return NSApplication.sharedApplication.delegate;
+}
+
+- (MultiPhotoView *)newMultiPhotoView {
+	NSWindowController *windowController = [[NSWindowController alloc] initWithWindowNibName:@"MultiPhotoFrameWindow"];
+	[self.windowControllers addObject:windowController];
+
+	[windowController.window makeKeyAndOrderFront:nil];
+
+	MultiPhotoView *photoView = (MultiPhotoView*)windowController.window.contentView.subviews.firstObject;
+
+	return photoView;
+}
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    NSWindowController *winController = [[NSWindowController alloc] initWithWindowNibName:@"MultiPhotoFrameWindow"];
-    [winController.window makeKeyAndOrderFront:nil];
-    
-    // When the window is closed, we need to release its window controller.
-    __unsafe_unretained id observer;
-    observer = [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowWillCloseNotification object:winController.window queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [[NSNotificationCenter defaultCenter] removeObserver:observer];
-    }];
+	self.windowControllers = [[NSMutableArray alloc] init];
+	
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(windowWillClose:) name:NSWindowWillCloseNotification object:nil];
+	
+	[self newMultiPhotoView];
+}
+
+- (void)windowWillClose:(NSNotification *)notification {
+	NSWindow *window = notification.object;
+	
+	for (NSWindowController *windowController in self.windowControllers) {
+		if (windowController.window == window) {
+			[self.windowControllers removeObject:windowController];
+			break;
+		}
+	}
+}
+
+- (void)dealloc {
+	[NSNotificationCenter.defaultCenter removeObserver:self name:NSWindowWillCloseNotification object:nil];
 }
 
 @end
