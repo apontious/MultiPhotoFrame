@@ -74,17 +74,12 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self registerForDraggedTypes:[NSArray arrayWithObject:(NSString*)kUTTypeURL]];
-        photoCellViewControllers = [[NSMutableArray arrayWithCapacity:4] retain];
+        photoCellViewControllers = [NSMutableArray arrayWithCapacity:4];
     }
     
     return self;
 }
 
-- (void)dealloc {
-    
-    [photoCellViewControllers release];
-    [super dealloc];
-}
 
 - (void)drawRect:(NSRect)dirtyRect {
     
@@ -101,7 +96,7 @@
 
 - (NSArray *)photoCellViewControllers {
     
-    return [[photoCellViewControllers copy] autorelease];
+    return [photoCellViewControllers copy];
 }
 
 - (void)setPhotoCellViewControllers:(NSArray *)newControllers {
@@ -109,7 +104,6 @@
     for (PhotoCellViewController *pcvController in photoCellViewControllers) {
         [pcvController.view removeFromSuperview];
     }
-    [photoCellViewControllers release];
     
     photoCellViewControllers = [newControllers mutableCopy];
     [self layoutPhotos];
@@ -272,7 +266,7 @@
      */
     NSArray *controllersForLayout;
     if (([photoCellViewControllers count] + [newCellViewControllers count]) <= 4) {
-        controllersForLayout = [[photoCellViewControllers mutableCopy] autorelease];
+        controllersForLayout = [photoCellViewControllers mutableCopy];
         [(NSMutableArray *)controllersForLayout addObjectsFromArray:newCellViewControllers];
     } else {
         controllersForLayout = newCellViewControllers;
@@ -312,7 +306,6 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         
         // Now that we have a pasteboard writer we can create our dragging item.
         NSDraggingItem *dragItem = [[NSDraggingItem alloc] initWithPasteboardWriter:pbItem];
-        [pbItem release];
         
         // The draggingFrame needs to be in the coordinate space of this view's bounds. This matches exactly with the frame of the Photo Cell View
         dragItem.draggingFrame = draggingPcvController.view.frame;
@@ -323,7 +316,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         };
         
         // This method creates the drag. The actual drag will start on the next turn of the run loop.
-        NSDraggingSession *draggingSession = [self beginDraggingSessionWithItems:[NSArray arrayWithObject:[dragItem autorelease]] event:event source:self];
+        NSDraggingSession *draggingSession = [self beginDraggingSessionWithItems:[NSArray arrayWithObject:dragItem] event:event source:self];
         
         // Since dragging hasn't started yet, we can adjust the Dragging Session properties here. Alternatively, you can also adjust the NSDraggingSession properties before the drag starts in your own -draggingSession:willBeginAtPoint: method implementation.
         draggingSession.animatesToStartingPositionsOnCancelOrFail = YES;
@@ -423,14 +416,12 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         
         MultiPhotoView *photoView = (MultiPhotoView*)[[[win contentView] subviews] objectAtIndex:0];
         photoView.photoCellViewControllers = [NSArray arrayWithObject:pcvController];
-        [pcvController release];
         
         [win makeKeyAndOrderFront:nil];
         
         // When the window is closed, we need to release its window controller.
-        __block id observer;
+        __unsafe_unretained id observer;
         observer = [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowWillCloseNotification object:win queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-            [winController release];
             [[NSNotificationCenter defaultCenter] removeObserver:observer];
         }];
     }
@@ -558,7 +549,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         }
     } else {
         // Animate the existing Photos out
-        leavingPhotoCellViewControllers = [photoCellViewControllers retain];
+        leavingPhotoCellViewControllers = photoCellViewControllers;
         for (PhotoCellViewController *pcvController in leavingPhotoCellViewControllers) {
             [pcvController.view.animator setAlphaValue:0];
         }
@@ -570,8 +561,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     }
     
     // Update out model data
-    [photoCellViewControllers release];
-    photoCellViewControllers = (NSMutableArray *)[controllersForLayout retain];
+    photoCellViewControllers = (NSMutableArray *)controllersForLayout;
     
     /* We have the information we need to enumerate the dragging items and update the drag images.
     */
@@ -616,7 +606,6 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     for (PhotoCellViewController *pcvController in leavingPhotoCellViewControllers) {
         [pcvController.view removeFromSuperview];
     }
-    [leavingPhotoCellViewControllers release];
     leavingPhotoCellViewControllers = nil;
     
     // Add any Photo Views that are not allready subviews.

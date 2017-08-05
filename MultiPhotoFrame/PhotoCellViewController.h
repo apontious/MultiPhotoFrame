@@ -56,12 +56,12 @@ enum {
 typedef NSInteger PhotoCellOrientation;
 
 @interface PhotoCellViewController : NSViewController {
-    NSImageView *photoView;
-    NSTextField *labelView;
+    NSImageView *__weak photoView;
+    NSTextField *__weak labelView;
 }
 
-@property(assign) IBOutlet NSImageView *photoView;
-@property(assign) IBOutlet NSTextField *labelView;
+@property(weak) IBOutlet NSImageView *photoView;
+@property(weak) IBOutlet NSTextField *labelView;
 
 @property(assign, readonly) PhotoCellOrientation photoCellOrientation;
 

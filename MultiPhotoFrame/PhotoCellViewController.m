@@ -74,7 +74,7 @@ NSImage *cacheImageOfView(NSView *view);
 + (PhotoCellViewController *)photoCellViewControllerWithURL:(NSURL *)url {
     MDItemRef mdItemRef = MDItemCreateWithURL(kCFAllocatorDefault, (CFURLRef)url);
     assert(mdItemRef);
-    NSString *commentStr = [(NSString*)MDItemCopyAttribute(mdItemRef, kMDItemFinderComment) autorelease];
+    NSString *commentStr = (NSString*)CFBridgingRelease(MDItemCopyAttribute(mdItemRef, kMDItemFinderComment));
     if (!commentStr) commentStr = @"";
     CFRelease(mdItemRef);
     
@@ -82,7 +82,7 @@ NSImage *cacheImageOfView(NSView *view);
     pcvController.representedObject = [NSDictionary dictionaryWithObjectsAndKeys:url, kImageUrlKey, commentStr, kLabelKey, nil];
     [pcvController loadView];
     
-    return [pcvController autorelease];
+    return pcvController;
 }
 
 - (PhotoCellOrientation)photoCellOrientation {
@@ -149,7 +149,7 @@ NSImage *cacheImageOfView(NSView *view) {
     NSImage *imageCache = [[NSImage alloc] initWithSize:[bitmapImageRep size]];
     [imageCache addRepresentation:bitmapImageRep];
     
-    return [imageCache autorelease];
+    return imageCache;
 }
 
 

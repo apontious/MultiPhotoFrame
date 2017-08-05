@@ -57,9 +57,8 @@
     [winController.window makeKeyAndOrderFront:nil];
     
     // When the window is closed, we need to release its window controller.
-    __block id observer;
+    __unsafe_unretained id observer;
     observer = [[NSNotificationCenter defaultCenter] addObserverForName:NSWindowWillCloseNotification object:winController.window queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note) {
-        [winController release];
         [[NSNotificationCenter defaultCenter] removeObserver:observer];
     }];
 }
