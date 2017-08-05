@@ -1,5 +1,5 @@
 /*
-     File: BackgroundView.m 
+     File: BackgroundView.swift 
  Abstract: Simple NSView subclass that fills it's contens with a rounded rect
   
   Version: 1.3 
@@ -47,32 +47,23 @@
  Modifications:
      Copyright (c) 2017 Andrew Pontious.
      Some right reserved: http://opensource.org/licenses/mit-license.php
- */
+*/
 
-#import "BackgroundView.h"
+import Cocoa
 
-static const CGFloat kCornerRadius = 5.0;
+class BackgroundView: NSView {
 
-@interface BackgroundView ()
-@property (nonatomic, copy) NSColor *backgroundColor;
-@end
+	private let cornerRadius: CGFloat = 5.0
 
-@implementation BackgroundView
+	private let backgroundColor = NSColor.lightGray
 
-- (instancetype)initWithFrame:(NSRect)frame {
-    self = [super initWithFrame:frame];
-    if (self) {
-        self.backgroundColor = NSColor.lightGrayColor;
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+
+		let clipPath = NSBezierPath(roundedRect: bounds, xRadius: cornerRadius, yRadius: cornerRadius)
+		clipPath.addClip()
+		backgroundColor.set()
+		NSRectFill(dirtyRect)
     }
-    
-    return self;
-}
 
-- (void)drawRect:(NSRect)dirtyRect {
-    NSBezierPath *clipPath = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:kCornerRadius yRadius:kCornerRadius];
-    [clipPath addClip];
-    [self.backgroundColor set];
-    NSRectFill(dirtyRect);
 }
-
-@end
