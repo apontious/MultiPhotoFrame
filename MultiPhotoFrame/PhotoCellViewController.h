@@ -48,12 +48,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-enum {
+typedef NS_ENUM(NSInteger, PhotoCellOrientation) {
     kPhotoCellOrientationLandscape = 0,
     kPhotoCellOrientationPortrait
 };
-
-typedef NSInteger PhotoCellOrientation;
 
 @interface PhotoCellViewController : NSViewController {
     NSImageView *__weak photoView;
@@ -67,7 +65,7 @@ typedef NSInteger PhotoCellOrientation;
 
 
 + (PhotoCellViewController *)photoCellViewControllerWithURL:(NSURL *)url;
-- (NSArray*)imageComponentsForDrag;
+@property (nonatomic, readonly, copy) NSArray *imageComponentsForDrag;
 
 @end
 

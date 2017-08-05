@@ -69,11 +69,11 @@
 
 @implementation MultiPhotoView
 
-- (id)initWithFrame:(NSRect)frame {
+- (instancetype)initWithFrame:(NSRect)frame {
     
     self = [super initWithFrame:frame];
     if (self) {
-        [self registerForDraggedTypes:[NSArray arrayWithObject:(NSString*)kUTTypeURL]];
+        [self registerForDraggedTypes:@[(NSString*)kUTTypeURL]];
         photoCellViewControllers = [NSMutableArray arrayWithCapacity:4];
     }
     
@@ -140,7 +140,7 @@
     #define setSuggestion(st,ca,i,r) do { [st setObject:[NSValue valueWithRect:r] forKey:[ca objectAtIndex:i]]; }while(0);
     NSMapTable *suggestionTable = [NSMapTable strongToStrongObjectsMapTable];
     
-    NSInteger photoCount = [pcvControllers count];
+    NSInteger photoCount = pcvControllers.count;
     
     CGFloat photoCellWidth, photoCellHeight, xOffset, yOffset;
     
@@ -150,7 +150,7 @@
         setSuggestion(suggestionTable, pcvControllers, 0, NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight));
          
     } else if (photoCount == 2) {
-        if ([[pcvControllers objectAtIndex:0] photoCellOrientation] == kPhotoCellOrientationPortrait) {
+        if ([pcvControllers[0] photoCellOrientation] == kPhotoCellOrientationPortrait) {
             photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
             photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
             xOffset = photoCellWidth + (kPhotoMargin * 2);
@@ -176,11 +176,11 @@
             }
         }
         
-        NSInteger landscapeCount = [landscapeArray count];
-        NSInteger portraitCount = [portraitArray count];
+        NSInteger landscapeCount = landscapeArray.count;
+        NSInteger portraitCount = portraitArray.count;
         if (landscapeCount > portraitCount) {
             if (landscapeCount == 3) {
-                [portraitArray addObject:[landscapeArray objectAtIndex:2]];
+                [portraitArray addObject:landscapeArray[2]];
                 [landscapeArray removeObjectAtIndex:2];
             }
             
@@ -196,7 +196,7 @@
             setSuggestion(suggestionTable, landscapeArray, 1, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight));
         } else {
             if (portraitCount == 3) {
-                [landscapeArray addObject:[portraitArray objectAtIndex:2]];
+                [landscapeArray addObject:portraitArray[2]];
                 [portraitArray removeObjectAtIndex:2];
             }
             
@@ -204,7 +204,7 @@
             yOffset = photoCellHeight + (kPhotoMargin * 2);
             
             photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
-            [[landscapeArray objectAtIndex:0] view].frame = NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight);
+            [landscapeArray[0] view].frame = NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight);
             setSuggestion(suggestionTable, landscapeArray, 0, NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
             
             photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
@@ -245,9 +245,9 @@
     NSMutableArray *newCellViewControllers = [NSMutableArray arrayWithCapacity:4];
     
     // By using the search options, we can have NSPasteboard narrow the search for us. In this case, we only want files that are images.
-    NSDictionary *searchOptions = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSPasteboardURLReadingFileURLsOnlyKey, [NSArray arrayWithObject:(id)kUTTypeImage], NSPasteboardURLReadingContentsConformToTypesKey, nil];
+    NSDictionary *searchOptions = @{NSPasteboardURLReadingFileURLsOnlyKey: @YES, NSPasteboardURLReadingContentsConformToTypesKey: @[(id)kUTTypeImage]};
     
-    NSArray *pasteboardURLs = [pasteboard readObjectsForClasses:[NSArray arrayWithObject:[NSURL class]] options:searchOptions];
+    NSArray *pasteboardURLs = [pasteboard readObjectsForClasses:@[[NSURL class]] options:searchOptions];
     
     // Create new Photo Cell View Controllers from the image files found on the pasteboard.
     for (NSURL *url in pasteboardURLs) {
@@ -265,7 +265,7 @@
     /* Combine the new Photo Cell View Controllers with the existing Photo Cell View Controllers only if the result is 4 or less photos. If the result is greater than 4 photos then we will discard the existing photos on drop. In this case, only use the new Photo Cell View Controllers to determine the new layout.
      */
     NSArray *controllersForLayout;
-    if (([photoCellViewControllers count] + [newCellViewControllers count]) <= 4) {
+    if ((photoCellViewControllers.count + newCellViewControllers.count) <= 4) {
         controllersForLayout = [photoCellViewControllers mutableCopy];
         [(NSMutableArray *)controllersForLayout addObjectsFromArray:newCellViewControllers];
     } else {
@@ -287,7 +287,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
 - (void)mouseDown:(NSEvent *)event {
     
     // The Photo Cell View Controller knows how to create the image components that make up the drag image. This little loop determines which controller owns the view the mouse down occured in.
-    NSPoint mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
+    NSPoint mouseLoc = [self convertPoint:event.locationInWindow fromView:nil];
     for (PhotoCellViewController *pcvController in photoCellViewControllers) {
         if (NSPointInRect(mouseLoc, pcvController.view.frame)) {
             draggingPcvController = pcvController;
@@ -297,12 +297,12 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
             
     if (draggingPcvController) {
         // Get the URL of the Photo. This URL will be placed on the dragging pasteboard for us.
-        NSDictionary *properties = [draggingPcvController representedObject];
-        NSURL *imageURL = [properties objectForKey:kImageUrlKey];
+        NSDictionary *properties = draggingPcvController.representedObject;
+        NSURL *imageURL = properties[kImageUrlKey];
         
         // We want a private dragging type so nothing accepts the drop. This way, as the drag source, we can fake an accept drop when creating a new window
         NSPasteboardItem *pbItem = [NSPasteboardItem new];
-        [pbItem setString:[imageURL absoluteString] forType:kPrivateDragUTI];
+        [pbItem setString:imageURL.absoluteString forType:kPrivateDragUTI];
         
         // Now that we have a pasteboard writer we can create our dragging item.
         NSDraggingItem *dragItem = [[NSDraggingItem alloc] initWithPasteboardWriter:pbItem];
@@ -316,7 +316,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         };
         
         // This method creates the drag. The actual drag will start on the next turn of the run loop.
-        NSDraggingSession *draggingSession = [self beginDraggingSessionWithItems:[NSArray arrayWithObject:dragItem] event:event source:self];
+        NSDraggingSession *draggingSession = [self beginDraggingSessionWithItems:@[dragItem] event:event source:self];
         
         // Since dragging hasn't started yet, we can adjust the Dragging Session properties here. Alternatively, you can also adjust the NSDraggingSession properties before the drag starts in your own -draggingSession:willBeginAtPoint: method implementation.
         draggingSession.animatesToStartingPositionsOnCancelOrFail = YES;
@@ -355,7 +355,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     if (mouseIsInView != dragIsInView) {
         if (!mouseIsInView) {
             // The drag has left the view, change the drag image to one that looks like a window
-			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:@[[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
                 // Even though we know for certain that there is only one drag item, we still must enumerate in order to change the drag image. However, we can still use this knowledge to simplify the enumeration block.
                 
                 NSImage *image =[NSImage imageNamed:@"WindowDragImage"];
@@ -370,7 +370,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
             }];
         } else {
             // The drag has re-entered the view, restore the drag image.
-			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:@[[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
                 // Even though we know for certain that there is only one drag item, we still must enumerate in order to change the drag image. However, we can still use this knowledge to simplify the enumeration block.
                                 
                 // As a drag source, we are completely responsible for where the drag image and cursor line up. Since we are returning 
@@ -403,7 +403,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     if (!mouseIsInView) {
         NSWindowController *winController = [[NSWindowController alloc] initWithWindowNibName:@"MultiPhotoFrameWindow"];
         NSWindow *win = winController.window;
-        NSSize windowSize = [win frame].size;
+        NSSize windowSize = win.frame.size;
         screenPoint.x -= floor(windowSize.width * 0.5);
         screenPoint.y -= floor(windowSize.height * 0.5);
         [win setFrameOrigin:screenPoint];
@@ -414,8 +414,8 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
         pcvController.representedObject = draggingPcvController.representedObject;
         [pcvController loadView];
         
-        MultiPhotoView *photoView = (MultiPhotoView*)[[[win contentView] subviews] objectAtIndex:0];
-        photoView.photoCellViewControllers = [NSArray arrayWithObject:pcvController];
+        MultiPhotoView *photoView = (MultiPhotoView*)win.contentView.subviews[0];
+        photoView.photoCellViewControllers = @[pcvController];
         
         [win makeKeyAndOrderFront:nil];
         
@@ -443,13 +443,13 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     NSPasteboard *pasteboard = sender.draggingPasteboard;
     
     // By using the search options, we can have NSPasteboard narrow the search for us. In this case, we only want files that are images.
-    NSDictionary *searchOptions = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSPasteboardURLReadingFileURLsOnlyKey, [NSArray arrayWithObject:(id)kUTTypeImage], NSPasteboardURLReadingContentsConformToTypesKey, nil];
+    NSDictionary *searchOptions = @{NSPasteboardURLReadingFileURLsOnlyKey: @YES, NSPasteboardURLReadingContentsConformToTypesKey: @[(id)kUTTypeImage]};
     
     // Since we aren't changing the dragging images here, just search the pasteboard directly instead of enumerating.
-    NSArray *pasteboardURLs = [pasteboard readObjectsForClasses:[NSArray arrayWithObject:[NSURL class]] options:searchOptions];
+    NSArray *pasteboardURLs = [pasteboard readObjectsForClasses:@[[NSURL class]] options:searchOptions];
     
     // accept 1-4 image file urls on the pasteboard
-    NSInteger count = [pasteboardURLs count];
+    NSInteger count = pasteboardURLs.count;
     if (count > 0 && count <= 4) {
         highlightForDragAcceptence = YES;
         [self setNeedsDisplay:YES];
@@ -481,16 +481,16 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     */
     
     // By using the search options, we can have NSPasteboard narrow the search for us. In this case, we only want files that are images.
-    NSDictionary *searchOptions = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSPasteboardURLReadingFileURLsOnlyKey, [NSArray arrayWithObject:(id)kUTTypeImage], NSPasteboardURLReadingContentsConformToTypesKey, nil];
+    NSDictionary *searchOptions = @{NSPasteboardURLReadingFileURLsOnlyKey: @YES, NSPasteboardURLReadingContentsConformToTypesKey: @[(id)kUTTypeImage]};
     /* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationClearNonenumeratedImages will do the hiding of the non acceptable file for us.
     */
-    [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:[NSArray arrayWithObject:[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+    [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:@[[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
         NSURL *url = (NSURL *)draggingItem.item;
         
         // The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
         PhotoCellViewController *pcvController = nil;
         for (PhotoCellViewController *controller in newCellViewControllers) {
-            if ([[controller.representedObject objectForKey:kImageUrlKey] isEqualTo:url]) {
+            if ([(controller.representedObject)[kImageUrlKey] isEqualTo:url]) {
                 pcvController = controller;
                 break;
             }
@@ -506,7 +506,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     }];
     
     // The number of files in the drag may not be the number of files we are accepting. Set the correct count on the dragging info so that the drag cursor badge is updated correctly.
-    sender.numberOfValidItemsForDrop = [newCellViewControllers count];
+    sender.numberOfValidItemsForDrop = newCellViewControllers.count;
     
     /* It doesn't matter where the user drops inside our view, we will always need to animate to our arranged layout. By setting the formation to NSDraggingFormationPile, the drag items will pile up to the lower right of the cursor.
      
@@ -541,17 +541,17 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     NSArray *controllersForLayout = [self combinedViewControllersForLayoutWithViewController:newCellViewControllers];
     NSMapTable *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
     
-    NSInteger exisingCellViewCount = [photoCellViewControllers count];
-    if (exisingCellViewCount > 0 && (exisingCellViewCount + [newCellViewControllers count]) <= 4) {
+    NSInteger exisingCellViewCount = photoCellViewControllers.count;
+    if (exisingCellViewCount > 0 && (exisingCellViewCount + newCellViewControllers.count) <= 4) {
         // Animate the existing Photos to thier new layout position
         for (PhotoCellViewController *pcvController in photoCellViewControllers) {
-            [pcvController.view.animator setFrame:[[suggestionTable objectForKey:pcvController] rectValue]];
+            (pcvController.view.animator).frame = [[suggestionTable objectForKey:pcvController] rectValue];
         }
     } else {
         // Animate the existing Photos out
         leavingPhotoCellViewControllers = photoCellViewControllers;
         for (PhotoCellViewController *pcvController in leavingPhotoCellViewControllers) {
-            [pcvController.view.animator setAlphaValue:0];
+            (pcvController.view.animator).alphaValue = 0;
         }
     }
     
@@ -567,17 +567,17 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     */
     
     // By using the search options, we can have NSPasteboard narrow the search for us. In this case, we only want files that are images.
-    NSDictionary *searchOptions = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:YES], NSPasteboardURLReadingFileURLsOnlyKey, [NSArray arrayWithObject:(id)kUTTypeImage], NSPasteboardURLReadingContentsConformToTypesKey, nil];
+    NSDictionary *searchOptions = @{NSPasteboardURLReadingFileURLsOnlyKey: @YES, NSPasteboardURLReadingContentsConformToTypesKey: @[(id)kUTTypeImage]};
     /* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationClearNonenumeratedImages will do the hiding of the non acceptable file for us.
      */
-    [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:[NSArray arrayWithObject:[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+    [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:@[[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
         
         NSURL *url = (NSURL *)draggingItem.item;
         
         // The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
         PhotoCellViewController *pcvController = nil;
         for (PhotoCellViewController *controller in newCellViewControllers) {
-            if ([[controller.representedObject objectForKey:kImageUrlKey] isEqualTo:url]) {
+            if ([(controller.representedObject)[kImageUrlKey] isEqualTo:url]) {
                 pcvController = controller;
                 break;
             }
@@ -610,7 +610,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     
     // Add any Photo Views that are not allready subviews.
     for (PhotoCellViewController *pcvController in photoCellViewControllers) {
-        if (![pcvController.view superview]) [self addSubview:pcvController.view];
+        if (!(pcvController.view).superview) [self addSubview:pcvController.view];
     }
 }
 

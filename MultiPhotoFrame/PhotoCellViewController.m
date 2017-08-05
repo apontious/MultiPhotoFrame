@@ -57,7 +57,7 @@ NSImage *cacheImageOfView(NSView *view);
 @synthesize labelView;
 
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -79,7 +79,7 @@ NSImage *cacheImageOfView(NSView *view);
     CFRelease(mdItemRef);
     
     PhotoCellViewController *pcvController = [[PhotoCellViewController alloc] initWithNibName:@"PhotoCellView" bundle:nil];
-    pcvController.representedObject = [NSDictionary dictionaryWithObjectsAndKeys:url, kImageUrlKey, commentStr, kLabelKey, nil];
+    pcvController.representedObject = @{kImageUrlKey: url, kLabelKey: commentStr};
     [pcvController loadView];
     
     return pcvController;
@@ -144,9 +144,9 @@ NSImage *cacheImageOfView(NSView *view);
 NSImage *cacheImageOfView(NSView *view) {
     NSRect bounds = view.bounds;
     NSBitmapImageRep *bitmapImageRep = [view bitmapImageRepForCachingDisplayInRect:bounds];
-    bzero([bitmapImageRep bitmapData], [bitmapImageRep bytesPerRow] * [bitmapImageRep pixelsHigh]);
+    bzero(bitmapImageRep.bitmapData, bitmapImageRep.bytesPerRow * bitmapImageRep.pixelsHigh);
     [view cacheDisplayInRect:bounds toBitmapImageRep:bitmapImageRep];
-    NSImage *imageCache = [[NSImage alloc] initWithSize:[bitmapImageRep size]];
+    NSImage *imageCache = [[NSImage alloc] initWithSize:bitmapImageRep.size];
     [imageCache addRepresentation:bitmapImageRep];
     
     return imageCache;

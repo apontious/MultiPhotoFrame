@@ -54,7 +54,7 @@
 
 @synthesize backgroundColor;
 
-- (id)initWithFrame:(NSRect)frame
+- (instancetype)initWithFrame:(NSRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
@@ -65,7 +65,7 @@
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-    NSBezierPath *clipPath = [NSBezierPath bezierPathWithRoundedRect:[self bounds] xRadius:kCornerRadius yRadius:kCornerRadius];
+    NSBezierPath *clipPath = [NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:kCornerRadius yRadius:kCornerRadius];
     [clipPath addClip];
     [self.backgroundColor set];
     NSRectFill(dirtyRect);
