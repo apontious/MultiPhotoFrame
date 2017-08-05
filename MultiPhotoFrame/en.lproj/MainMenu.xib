@@ -11,7 +11,7 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <menu title="AMainMenu" systemMenu="main" id="29">
             <items>
                 <menuItem title="MultiPhotoFrame" id="56">
@@ -647,7 +647,7 @@
                 </menuItem>
             </items>
         </menu>
-        <customObject id="494" userLabel="MultiPhotoFrameAppDelegate" customClass="MultiPhotoFrameAppDelegate"/>
+        <customObject id="494" userLabel="MultiPhotoFrameAppDelegate" customClass="MultiPhotoFrameAppDelegate" customModule="MultiPhotoFrame" customModuleProvider="target"/>
         <customObject id="420" customClass="NSFontManager"/>
     </objects>
 </document>

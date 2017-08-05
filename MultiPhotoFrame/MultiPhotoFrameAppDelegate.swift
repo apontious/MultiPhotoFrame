@@ -1,6 +1,7 @@
 /*
-     File: main.m 
- Abstract: Main code file for MultiPhotoFrame sample. 
+     File: MultiPhotoFrameAppDelegate.swift
+ Abstract: The main controller for this application.
+  
   Version: 1.3 
   
  Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple 
@@ -48,9 +49,56 @@
      Some right reserved: http://opensource.org/licenses/mit-license.php
  */
 
-@import Cocoa;
+import Cocoa
 
-int main(int argc, char *argv[])
-{
-    return NSApplicationMain(argc, (const char **)argv);
+@NSApplicationMain
+class MultiPhotoFrameAppDelegate: NSObject, NSApplicationDelegate {
+
+	private var windowControllers: [NSWindowController] = []
+
+	public class var sharedAppDelegate: MultiPhotoFrameAppDelegate {
+		return NSApplication.shared().delegate as! MultiPhotoFrameAppDelegate
+	}
+
+	public var newMultiPhotoView: MultiPhotoView {
+		let windowController = NSWindowController(windowNibName: "MultiPhotoFrameWindow")
+		windowControllers.append(windowController)
+
+		windowController.window?.makeKeyAndOrderFront(nil)
+
+		let photoView = windowController.window!.contentView!.subviews.first as! MultiPhotoView
+
+		return photoView
+	}
+
+	// MARK: - NSApplicationDelegate
+
+	func applicationWillFinishLaunching(_ notification: Notification) {
+		NotificationCenter.default.addObserver(self, selector:#selector(MultiPhotoFrameAppDelegate.windowWillClose), name:NSNotification.Name.NSWindowWillClose, object:nil)
+
+		if newMultiPhotoView.autoresizesSubviews {} // Usage is here solely to silence compiler warning about unused value
+	}
+
+	func windowWillClose(_ notification: Notification) {
+		guard let window = notification.object as? NSWindow else {
+			return
+		}
+
+		var i = 0
+
+		while (i < windowControllers.count) {
+			if windowControllers[i].window == window {
+				windowControllers.remove(at: i)
+				break
+			}
+
+			i = i+1
+		}
+	}
+
+	deinit {
+		// Need to do this up until Mac OS X 11.0
+		NotificationCenter.default.removeObserver(self, name: NSNotification.Name.NSWindowWillClose, object: nil)
+
+	}
 }

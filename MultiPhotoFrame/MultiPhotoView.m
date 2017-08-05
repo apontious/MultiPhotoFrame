@@ -55,7 +55,7 @@
 
 #import "MultiPhotoView.h"
 #import "PhotoCellViewController.h"
-#import "MultiPhotoFrameAppDelegate.h"
+#import "MultiPhotoFrame-Swift.h"
 
 static const CGFloat kPhotoMargin = 10.0;
 static const CGFloat kMaxDragWidth = 200;
