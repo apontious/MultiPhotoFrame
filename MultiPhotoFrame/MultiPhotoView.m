@@ -144,7 +144,7 @@
 - (NSMapTable *)suggestedLayoutForPhotoCellViewControllers:(NSArray *)pcvControllers {
     
     #define setSuggestion(st,ca,i,r) do { [st setObject:[NSValue valueWithRect:r] forKey:[ca objectAtIndex:i]]; }while(0);
-    NSMapTable *suggestionTable = [NSMapTable mapTableWithStrongToStrongObjects];
+    NSMapTable *suggestionTable = [NSMapTable strongToStrongObjectsMapTable];
     
     NSInteger photoCount = [pcvControllers count];
     
