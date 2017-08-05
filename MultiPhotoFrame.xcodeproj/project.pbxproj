@@ -30,7 +30,6 @@
 		877A8B17138CC5AC0026542D /* MultiPhotoFrame-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MultiPhotoFrame-Info.plist"; sourceTree = "<group>"; };
 		877A8B19138CC5AC0026542D /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		877A8B1B138CC5AC0026542D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		877A8B1D138CC5AC0026542D /* MultiPhotoFrame-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MultiPhotoFrame-Prefix.pch"; sourceTree = "<group>"; };
 		877A8B21138CC5AC0026542D /* MultiPhotoFrameAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MultiPhotoFrameAppDelegate.h; sourceTree = "<group>"; };
 		877A8B22138CC5AC0026542D /* MultiPhotoFrameAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiPhotoFrameAppDelegate.m; sourceTree = "<group>"; };
 		877A8B25138CC5AC0026542D /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -121,7 +120,6 @@
 				877A8B17138CC5AC0026542D /* MultiPhotoFrame-Info.plist */,
 				877A8B18138CC5AC0026542D /* InfoPlist.strings */,
 				877A8B1B138CC5AC0026542D /* main.m */,
-				877A8B1D138CC5AC0026542D /* MultiPhotoFrame-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -282,8 +280,6 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MultiPhotoFrame/MultiPhotoFrame-Prefix.pch";
 				INFOPLIST_FILE = "MultiPhotoFrame/MultiPhotoFrame-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
@@ -295,8 +291,6 @@
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "MultiPhotoFrame/MultiPhotoFrame-Prefix.pch";
 				INFOPLIST_FILE = "MultiPhotoFrame/MultiPhotoFrame-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
