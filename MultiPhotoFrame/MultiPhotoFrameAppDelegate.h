@@ -44,6 +44,9 @@
   
  Copyright (C) 2013 Apple Inc. All Rights Reserved. 
   
+ Modifications:
+     Copyright (c) 2017 Andrew Pontious.
+     Some right reserved: http://opensource.org/licenses/mit-license.php
 */
 
 @import Cocoa;
