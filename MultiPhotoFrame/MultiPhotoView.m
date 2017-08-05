@@ -362,7 +362,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
     if (mouseIsInView != dragIsInView) {
         if (!mouseIsInView) {
             // The drag has left the view, change the drag image to one that looks like a window
-            [session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:nil usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
                 // Even though we know for certain that there is only one drag item, we still must enumerate in order to change the drag image. However, we can still use this knowledge to simplify the enumeration block.
                 
                 NSImage *image =[NSImage imageNamed:@"WindowDragImage"];
@@ -377,7 +377,7 @@ NSString *kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewWindow";
             }];
         } else {
             // The drag has re-entered the view, restore the drag image.
-            [session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:nil usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
+			[session enumerateDraggingItemsWithOptions:0 forView:nil classes:[NSArray arrayWithObject:[NSPasteboardItem class]] searchOptions:@{} usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
                 // Even though we know for certain that there is only one drag item, we still must enumerate in order to change the drag image. However, we can still use this knowledge to simplify the enumeration block.
                                 
                 // As a drag source, we are completely responsible for where the drag image and cursor line up. Since we are returning 
