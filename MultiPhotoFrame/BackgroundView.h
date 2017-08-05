@@ -1,5 +1,5 @@
 /*
-     File: BackGroundView.h 
+     File: BackgroundView.h 
  Abstract: Simple NSView subclass that fills it's contens with a rounded rect
   
   Version: 1.3 
@@ -48,7 +48,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface BackGroundView : NSView {
+@interface BackgroundView : NSView {
     NSColor *backgroundColor;
 }
 

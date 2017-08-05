@@ -15,7 +15,7 @@
 		877A8B2D138CC5CB0026542D /* MultiPhotoFrameWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 877A8B2C138CC5CB0026542D /* MultiPhotoFrameWindow.xib */; };
 		877A8B30138CC60A0026542D /* MultiPhotoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 877A8B2F138CC60A0026542D /* MultiPhotoView.m */; };
 		877A8B32138CC7FF0026542D /* PhotoCellView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 877A8B31138CC7FF0026542D /* PhotoCellView.xib */; };
-		877A8B35138CC98C0026542D /* BackGroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 877A8B34138CC98C0026542D /* BackGroundView.m */; };
+		877A8B35138CC98C0026542D /* BackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 877A8B34138CC98C0026542D /* BackgroundView.m */; };
 		877A8B39138CCBDA0026542D /* PhotoCellViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 877A8B37138CCBDA0026542D /* PhotoCellViewController.m */; };
 		877A8B3A138CCBDA0026542D /* PhotoCellViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 877A8B38138CCBDA0026542D /* PhotoCellViewController.xib */; };
 		87DA5F8C138D658E006AE4A1 /* WindowDragImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 87DA5F8B138D658E006AE4A1 /* WindowDragImage.png */; };
@@ -38,8 +38,8 @@
 		877A8B2E138CC60A0026542D /* MultiPhotoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiPhotoView.h; sourceTree = "<group>"; };
 		877A8B2F138CC60A0026542D /* MultiPhotoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiPhotoView.m; sourceTree = "<group>"; };
 		877A8B31138CC7FF0026542D /* PhotoCellView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCellView.xib; sourceTree = "<group>"; };
-		877A8B33138CC98C0026542D /* BackGroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackGroundView.h; sourceTree = "<group>"; };
-		877A8B34138CC98C0026542D /* BackGroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackGroundView.m; sourceTree = "<group>"; };
+		877A8B33138CC98C0026542D /* BackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundView.h; sourceTree = "<group>"; };
+		877A8B34138CC98C0026542D /* BackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundView.m; sourceTree = "<group>"; };
 		877A8B36138CCBDA0026542D /* PhotoCellViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCellViewController.h; sourceTree = "<group>"; };
 		877A8B37138CCBDA0026542D /* PhotoCellViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCellViewController.m; sourceTree = "<group>"; };
 		877A8B38138CCBDA0026542D /* PhotoCellViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCellViewController.xib; sourceTree = "<group>"; };
@@ -101,8 +101,8 @@
 				877A8B22138CC5AC0026542D /* MultiPhotoFrameAppDelegate.m */,
 				877A8B2E138CC60A0026542D /* MultiPhotoView.h */,
 				877A8B2F138CC60A0026542D /* MultiPhotoView.m */,
-				877A8B33138CC98C0026542D /* BackGroundView.h */,
-				877A8B34138CC98C0026542D /* BackGroundView.m */,
+				877A8B33138CC98C0026542D /* BackgroundView.h */,
+				877A8B34138CC98C0026542D /* BackgroundView.m */,
 				877A8B36138CCBDA0026542D /* PhotoCellViewController.h */,
 				877A8B37138CCBDA0026542D /* PhotoCellViewController.m */,
 				877A8B38138CCBDA0026542D /* PhotoCellViewController.xib */,
@@ -195,7 +195,7 @@
 				877A8B1C138CC5AC0026542D /* main.m in Sources */,
 				877A8B23138CC5AC0026542D /* MultiPhotoFrameAppDelegate.m in Sources */,
 				877A8B30138CC60A0026542D /* MultiPhotoView.m in Sources */,
-				877A8B35138CC98C0026542D /* BackGroundView.m in Sources */,
+				877A8B35138CC98C0026542D /* BackgroundView.m in Sources */,
 				877A8B39138CCBDA0026542D /* PhotoCellViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

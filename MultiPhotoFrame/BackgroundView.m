@@ -1,5 +1,5 @@
 /*
-     File: BackGroundView.m 
+     File: BackgroundView.m 
  Abstract: Simple NSView subclass that fills it's contens with a rounded rect
   
   Version: 1.3 
@@ -46,11 +46,11 @@
   
  */
 
-#import "BackGroundView.h"
+#import "BackgroundView.h"
 
 #define kCornerRadius 5
 
-@implementation BackGroundView
+@implementation BackgroundView
 
 @synthesize backgroundColor;
 
