@@ -46,7 +46,7 @@
   
 */
 
-#import <Cocoa/Cocoa.h>
+@import Cocoa;
 
 @interface BackgroundView : NSView {
     NSColor *backgroundColor;

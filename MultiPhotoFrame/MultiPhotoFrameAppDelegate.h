@@ -46,7 +46,7 @@
   
 */
 
-#import <Cocoa/Cocoa.h>
+@import Cocoa;
 
 @interface MultiPhotoFrameAppDelegate : NSObject <NSApplicationDelegate> {
     NSWindow *__weak window;
