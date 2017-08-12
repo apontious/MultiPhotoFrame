@@ -462,7 +462,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     NSArray<PhotoCellViewController *> *controllersForLayout = [self combinedViewControllersForLayoutWithViewController:newCellViewControllers];
     NSMapTable *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
     
-    /* We now have a collection of new Photo Cell View Controllers and a table of suggested frames. At this point, set the frames of the new Photo Cell View Controllers' views. We also adjust the frame proportionally from the suggestion so we don't end up with extremely large drag images. The views of the Photo Cell View Controllers have not been added to this view (or any window), so we can change thier frames without affecting the currenlty visible Photos in this view.
+    /* We now have a collection of new Photo Cell View Controllers and a table of suggested frames. At this point, set the frames of the new Photo Cell View Controllers' views. We also adjust the frame proportionally from the suggestion so we don't end up with extremely large drag images. The views of the Photo Cell View Controllers have not been added to this view (or any window), so we can change their frames without affecting the currenlty visible Photos in this view.
     */
     for (PhotoCellViewController *pcvController in newCellViewControllers) {
         NSRect newFrame = [[suggestionTable objectForKey:pcvController] rectValue];
@@ -493,7 +493,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
         
         draggingItem.draggingFrame = pcvController.view.frame;
         draggingItem.imageComponentsProvider = ^ {
-            /* Loading the image file and rendering it to create the drag image components can be slow, particularly for files on a newtork volumne, or large images or for a large number of files in the drop. One technique for dealing with this is to start caching the images in a background thread during -draggingEntered: for use here. If your background thread does not complete before this method is called, you can flag that you need to updat the images and update them during -draggingUpdate: if that flag is set.
+            /* Loading the image file and rendering it to create the drag image components can be slow, particularly for files on a network volume, or large images or for a large number of files in the drop. One technique for dealing with this is to start caching the images in a background thread during -draggingEntered: for use here. If your background thread does not complete before this method is called, you can flag that you need to update the images and update them during -draggingUpdate: if that flag is set.
             */
             return [pcvController imageComponentsForDrag];
         };
@@ -516,7 +516,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     [self setNeedsDisplay:YES];
 }
 
-/* The user has dropped a drag that we had previously validated as acceptable. Set animatesToDestination to YES so that the drag items animate to thier final arranged locations in the view. (See -performDragOperation: below.)
+/* The user has dropped a drag that we had previously validated as acceptable. Set animatesToDestination to YES so that the drag items animate to their final arranged locations in the view. (See -performDragOperation: below.)
 */
 - (BOOL)prepareForDragOperation:(id<NSDraggingInfo>)sender {
     
@@ -536,7 +536,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
 
     NSUInteger exisingCellViewCount = self.photoCellViewControllers.count;
     if (exisingCellViewCount > 0 && (exisingCellViewCount + newCellViewControllers.count) <= 4) {
-        // Animate the existing Photos to thier new layout position
+        // Animate the existing Photos to their new layout position
         for (PhotoCellViewController *pcvController in self.photoCellViewControllers) {
             pcvController.view.animator.frame = [[suggestionTable objectForKey:pcvController] rectValue];
         }
@@ -548,12 +548,12 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
         }
     }
     
-    // Set the new Photo Views to thier final frames. These views have not been added to the window yet, so visually nothing will happen. We set the dragging items to these frame so that the drag animates to the correct place. (See -concludeDragOperation: for how / when we add these views as subviews.)
+    // Set the new Photo Views to their final frames. These views have not been added to the window yet, so visually nothing will happen. We set the dragging items to these frame so that the drag animates to the correct place. (See -concludeDragOperation: for how / when we add these views as subviews.)
     for (PhotoCellViewController *pcvController in newCellViewControllers) {
         pcvController.view.frame = [[suggestionTable objectForKey:pcvController] rectValue];
     }
     
-    // Update out model data
+    // Update our model data
     self.photoCellViewControllers = controllersForLayout;
 
     /* We have the information we need to enumerate the dragging items and update the drag images.
@@ -591,7 +591,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     return YES;
 }
 
-/* The drag has concluded. The drag images have animated to the correct place in this view and the existing photos have either animated to thier new frames or to 0 opacity. Note: the drag image is still on the screen. In this method, we need to update our view contents to achieve a seemless transition when the drag image is removed from the screen after this method returns.
+/* The drag has concluded. The drag images have animated to the correct place in this view and the existing photos have either animated to their new frames or to 0 opacity. Note: the drag image is still on the screen. In this method, we need to update our view contents to achieve a seemless transition when the drag image is removed from the screen after this method returns.
 */
 - (void)concludeDragOperation:(id<NSDraggingInfo>)sender {
     
