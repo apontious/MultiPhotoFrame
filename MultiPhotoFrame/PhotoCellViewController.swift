@@ -63,18 +63,8 @@ class PhotoCellViewController: NSViewController {
 	@IBOutlet private var photoView: NSImageView!
 	@IBOutlet private var labelView: NSImageView!
 
-	private let url: URL
+	public let url: URL
 
-	public func isEqual(toDraggingItem draggingItem: NSDraggingItem) -> Bool {
-		guard let draggingItemURL = draggingItem.item as? URL else {
-			return false
-		}
-
-		// Using isEqual: to compare this object's URL to a draggingItem's URL in Obj-C doesn't seem to work.
-		// TODO: try comparing for equality again when everything's in Swift, see if that changes behavior.
-		return draggingItemURL == url
-	}
-	
 	override func loadView() {
 		super.loadView()
 		photoView.unregisterDraggedTypes()

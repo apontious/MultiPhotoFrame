@@ -468,10 +468,14 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		/* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationOptions.clearNonenumeratedImages will do the hiding of the non acceptable file for us.
 		*/
 		sender.enumerateDraggingItems(options: [.clearNonenumeratedImages], for: self, classes: [NSURL.self], searchOptions: searchOptions) { (draggingItem, idx, stop) in
+			guard let url = draggingItem.item as? URL else {
+				return
+			}
+
 			// The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
 			var pcvController: PhotoCellViewController?
 			for controller in newCellViewControllers {
-				if controller.isEqual(toDraggingItem: draggingItem) {
+				if controller.url == url {
 					pcvController = controller
 					break;
 				}
@@ -553,10 +557,13 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		/* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumeration.clearNonenumeratedImages will do the hiding of the non acceptable file for us.
 		*/
 		sender.enumerateDraggingItems(options: [.clearNonenumeratedImages], for: self, classes: [NSURL.self], searchOptions: searchOptions) { (draggingItem, idx, stop) in
+			guard let url = draggingItem.item as? URL else {
+				return
+			}
 			// The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
 			var pcvController: PhotoCellViewController?
 			for controller in newCellViewControllers {
-				if controller.isEqual(toDraggingItem: draggingItem) {
+				if controller.url == url {
 					pcvController = controller;
 					break
 				}
