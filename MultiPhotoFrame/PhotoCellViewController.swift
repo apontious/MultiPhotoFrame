@@ -93,14 +93,14 @@ class PhotoCellViewController: NSViewController {
 		let orientation: PhotoCellOrientation
 
 		if let image = self.photoView.image {
-			let imageSize = image.size;
+			let imageSize = image.size
 			if (imageSize.width >= imageSize.height) {
-				orientation = .landscape;
+				orientation = .landscape
 			} else {
-				orientation = .portrait;
+				orientation = .portrait
 			}
 		} else {
-			orientation = .landscape;
+			orientation = .landscape
 		}
 
 		return orientation
@@ -113,7 +113,7 @@ class PhotoCellViewController: NSViewController {
 		let imageCache = NSImage(size: bitmapImageRep.size)
 		imageCache.addRepresentation(bitmapImageRep)
 
-		return imageCache;
+		return imageCache
 	}
 
 	/* This method is called by MultiPhotoView to generate the dragging image components. The dragging image components for a Photo Cell View consist of the matte background, photo image, and comment label.

@@ -100,7 +100,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		for pcvController in photoCellViewControllers {
 			if NSPointInRect(mouseLoc, pcvController.view.frame) {
 				draggingPcvController = pcvController
-				break;
+				break
 			}
 		}
 
@@ -144,7 +144,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
         super.draw(dirtyRect)
 
 		NSColor.white.set()
-		NSRectFill(dirtyRect);
+		NSRectFill(dirtyRect)
 
 		if (self.highlightForDragAcceptence) {
 			NSGraphicsContext.saveGraphicsState()
@@ -218,13 +218,13 @@ class MultiPhotoView: NSView, NSDraggingSource {
 					landscapeArray.remove(at: 2)
 				}
 
-				let width = (self.bounds.width - (4 * kPhotoMargin)) / 2;
+				let width = (self.bounds.width - (4 * kPhotoMargin)) / 2
 
-				let height = self.bounds.height - (2 * kPhotoMargin);
-				let heightHalf = (self.bounds.height - (4 * kPhotoMargin)) / 2;
+				let height = self.bounds.height - (2 * kPhotoMargin)
+				let heightHalf = (self.bounds.height - (4 * kPhotoMargin)) / 2
 
-				let xOffset = width + (kPhotoMargin * 2);
-				let yOffset = heightHalf + (kPhotoMargin * 2);
+				let xOffset = width + (kPhotoMargin * 2)
+				let yOffset = heightHalf + (kPhotoMargin * 2)
 
 				suggestionTable = [portraitArray[0].hash: CGRect(x: kPhotoMargin, y: kPhotoMargin, width: width, height: height),
 				                   landscapeArray[0].hash: CGRect(x: kPhotoMargin + xOffset, y: kPhotoMargin + yOffset, width: width, height: heightHalf),
@@ -235,34 +235,34 @@ class MultiPhotoView: NSView, NSDraggingSource {
 					portraitArray.remove(at: 2)
 				}
 
-				let height = (self.bounds.height - (4 * kPhotoMargin)) / 2;
-				let yOffset = height + (kPhotoMargin * 2);
+				let height = (self.bounds.height - (4 * kPhotoMargin)) / 2
+				let yOffset = height + (kPhotoMargin * 2)
 
-				let width = self.bounds.width - (2 * kPhotoMargin);
+				let width = self.bounds.width - (2 * kPhotoMargin)
 
-				let widthHalf = (self.bounds.width - (4 * kPhotoMargin)) / 2;
-				let xOffset = widthHalf + (kPhotoMargin * 2);
+				let widthHalf = (self.bounds.width - (4 * kPhotoMargin)) / 2
+				let xOffset = widthHalf + (kPhotoMargin * 2)
 
 				suggestionTable = [landscapeArray[0].hash: CGRect(x: kPhotoMargin, y: kPhotoMargin + yOffset, width: width, height: height),
 				                   portraitArray[0].hash: CGRect(x: kPhotoMargin, y: kPhotoMargin, width: widthHalf, height: height),
 				                   portraitArray[1].hash: CGRect(x: kPhotoMargin + xOffset, y: kPhotoMargin, width: widthHalf, height: height)]
 			}
 		} else if (photoCount == 4) {
-			let width = (self.bounds.width - (4 * kPhotoMargin)) / 2;
-			let height = (self.bounds.height - (4 * kPhotoMargin)) / 2;
-			let xOffset = width + (kPhotoMargin * 2);
-			let yOffset = height + (kPhotoMargin * 2);
+			let width = (self.bounds.width - (4 * kPhotoMargin)) / 2
+			let height = (self.bounds.height - (4 * kPhotoMargin)) / 2
+			let xOffset = width + (kPhotoMargin * 2)
+			let yOffset = height + (kPhotoMargin * 2)
 
 			suggestionTable = [pcvControllers[0].hash: CGRect(x: kPhotoMargin, y: kPhotoMargin + yOffset, width: width, height: height),
 			                   pcvControllers[1].hash: CGRect(x: kPhotoMargin + xOffset, y: kPhotoMargin + yOffset, width: width, height: height),
 			                   pcvControllers[2].hash: CGRect(x: kPhotoMargin, y: kPhotoMargin, width: width, height: height),
 			                   pcvControllers[3].hash: CGRect(x: kPhotoMargin + xOffset, y: kPhotoMargin, width: width, height: height)]
 		} else {
-			assertionFailure("Too few or too many PhotoCellViewControllers! I can only deal with 1-4 of them, but there are \(photoCount).");
+			assertionFailure("Too few or too many PhotoCellViewControllers! I can only deal with 1-4 of them, but there are \(photoCount).")
 			suggestionTable = [Int: CGRect]()
 		}
 
-		return suggestionTable;
+		return suggestionTable
 	}
 
 	private func layoutPhotos() {
@@ -302,7 +302,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		if photoCellViewControllers.count + newCellViewControllers.count <= 4 {
 			controllersForLayout = photoCellViewControllers + newCellViewControllers
 		} else {
-			controllersForLayout = newCellViewControllers;
+			controllersForLayout = newCellViewControllers
 		}
 
 		return controllersForLayout
@@ -346,7 +346,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 					let dragLoc = session.draggingLocation
 
 					// As a drag source, we are completely responsible for where the drag image and cursor line up. To simplify things for this example, I'm centering the drag image on the cursor.
-					let newFrame = CGRect(x: dragLoc.x - image.size.width * 0.5, y: dragLoc.y - image.size.height * 0.5, width: image.size.width, height: image.size.height);
+					let newFrame = CGRect(x: dragLoc.x - image.size.width * 0.5, y: dragLoc.y - image.size.height * 0.5, width: image.size.width, height: image.size.height)
 
 					draggingItem.setDraggingFrame(newFrame, contents:image)
 					}
@@ -361,11 +361,11 @@ class MultiPhotoView: NSView, NSDraggingSource {
 					}
 
 					// As a drag source, we are completely responsible for where the drag image and cursor line up. Since we are returning
-					var newFrame = draggingPcvController.view.frame;
+					var newFrame = draggingPcvController.view.frame
 					let dragLoc = session.draggingLocation
-					newFrame.origin.x = dragLoc.x - newFrame.width * 0.5;
-					newFrame.origin.y = dragLoc.y - newFrame.height * 0.5;
-					draggingItem.draggingFrame = newFrame;
+					newFrame.origin.x = dragLoc.x - newFrame.width * 0.5
+					newFrame.origin.y = dragLoc.y - newFrame.height * 0.5
+					draggingItem.draggingFrame = newFrame
 
 					// We are storing the Photo Cell View controller in an ivar during the drag because we know it won't change during the drag. Simply let the Photo Cell View Controller create the imageComponents for us.
 					draggingItem.imageComponentsProvider = {
@@ -373,10 +373,10 @@ class MultiPhotoView: NSView, NSDraggingSource {
 					}
 				}
 			}
-			self.dragIsInView = mouseIsInView;
+			self.dragIsInView = mouseIsInView
 
 			// When the user drops the drag, it will technically fail. However, since we can determine if the drag was dropped over our view or not, we can fake a successful drop by making sure the slide back animation does not happen if we want to fake a success. If the user drops inside the view, then instruct the dragging session to do the normal cancel slide back animation.
-			session.animatesToStartingPositionsOnCancelOrFail = self.dragIsInView;
+			session.animatesToStartingPositionsOnCancelOrFail = self.dragIsInView
 		}
 	}
 
@@ -477,7 +477,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 			for controller in newCellViewControllers {
 				if controller.url == url {
 					pcvController = controller
-					break;
+					break
 				}
 			}
 			guard pcvController != nil else {
@@ -485,12 +485,12 @@ class MultiPhotoView: NSView, NSDraggingSource {
 				return
 			}
 
-			draggingItem.draggingFrame = pcvController!.view.frame;
+			draggingItem.draggingFrame = pcvController!.view.frame
 			draggingItem.imageComponentsProvider = {
 				/* Loading the image file and rendering it to create the drag image components can be slow, particularly for files on a network volume, or large images or for a large number of files in the drop. One technique for dealing with this is to start caching the images in a background thread during -draggingEntered: for use here. If your background thread does not complete before this method is called, you can flag that you need to update the images and update them during -draggingUpdate: if that flag is set.
 				*/
 				return pcvController!.imageComponentsForDrag()
-			};
+			}
 		}
 
 		// The number of files in the drag may not be the number of files we are accepting. Set the correct count on the dragging info so that the drag cursor badge is updated correctly.
@@ -527,7 +527,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		let controllersForLayout = combinedViewControllersForLayout(withViewController: newCellViewControllers)
 		let suggestionTable = suggestedLayout(forPhotoCellViewControllers:controllersForLayout)
 
-		let existingCellViewCount = photoCellViewControllers.count;
+		let existingCellViewCount = photoCellViewControllers.count
 		if existingCellViewCount > 0 && existingCellViewCount + newCellViewControllers.count <= 4 {
 			// Animate the existing Photos to their new layout position
 			for pcvController in photoCellViewControllers {
@@ -564,7 +564,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 			var pcvController: PhotoCellViewController?
 			for controller in newCellViewControllers {
 				if controller.url == url {
-					pcvController = controller;
+					pcvController = controller
 					break
 				}
 			}
