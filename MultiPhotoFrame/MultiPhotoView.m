@@ -54,7 +54,6 @@
  */
 
 #import "MultiPhotoView.h"
-#import "PhotoCellViewController.h"
 #import "MultiPhotoFrame-Swift.h"
 
 static const CGFloat kPhotoMargin = 10.0;
@@ -120,11 +119,7 @@ static const CGFloat kMaxDragWidth = 200;
     return self;
 }
 
-static void setSuggestion(NSMapTable *suggestionTable, NSArray<PhotoCellViewController *> *pcvControllers, NSUInteger index, NSRect rect) {
-	[suggestionTable setObject:[NSValue valueWithRect:rect] forKey:pcvControllers[index]];
-}
-
-/* This method takes an array of PhtoCellViewControllers and returns a map table containing the suggested layout frames of each cell view. The are two reasons for returning a suggestion table instead of setting the frame of each cell view directly. First, the input array of controllers may contain existing cell views along with new ones for the drag images. We don't want to modify existing cell views when we setup the ones for dragging but, we need the complete set of controllers to properly determine the layout. Second, on drop, we want to animate the frame change.
+/* This method takes an array of PhtoCellViewControllers and returns a dictionary containing the suggested layout frames of each cell's URL. The are two reasons for returning a suggestion table instead of setting the frame of each cell view directly. First, the input array of controllers may contain existing cell views along with new ones for the drag images. We don't want to modify existing cell views when we setup the ones for dragging but, we need the complete set of controllers to properly determine the layout. Second, on drop, we want to animate the frame change.
  
     We try to tastefully layout up to 4 images taking into consideration the orientation of the photos. The orientation really only matters for 2 up and 3 up collections. For 2 up, show two portrait panels side-by-side or two Landscape panels stacked. For 3 up, show 1 portrait with two landscapes stacked to the right, or 1 landscape with two side-by-side portraits underneath.
  
@@ -140,91 +135,91 @@ static void setSuggestion(NSMapTable *suggestionTable, NSArray<PhotoCellViewCont
        |----| |----|
        |____| |____|
 */
-- (NSMapTable *)suggestedLayoutForPhotoCellViewControllers:(NSArray<PhotoCellViewController *> *)pcvControllers {
-    NSMapTable *suggestionTable = [NSMapTable strongToStrongObjectsMapTable];
+- (NSDictionary<NSNumber *, NSValue *> *)suggestedLayoutForPhotoCellViewControllers:(NSArray<PhotoCellViewController *> *)pcvControllers {
+    NSDictionary<NSNumber *, NSValue *> *suggestionTable;
 
-    NSUInteger photoCount = pcvControllers.count;
+    const NSUInteger photoCount = pcvControllers.count;
 
-    CGFloat photoCellWidth, photoCellHeight, xOffset, yOffset;
-    
     if (photoCount == 1) {
-        photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
-        photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
-        setSuggestion(suggestionTable, pcvControllers, 0, NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight));
-         
+        const CGFloat photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
+        const CGFloat photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
+
+        suggestionTable = @{@(pcvControllers[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight)]};
     } else if (photoCount == 2) {
-        if (pcvControllers[0].photoCellOrientation == kPhotoCellOrientationPortrait) {
-            photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
-            photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
-            xOffset = photoCellWidth + (kPhotoMargin * 2);
-            yOffset = 0;
-        } else {
-            photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
-            photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
-            xOffset = 0;
-            yOffset = photoCellHeight + (kPhotoMargin * 2);
-        }
-        
-        setSuggestion(suggestionTable, pcvControllers, 0, NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
-        setSuggestion(suggestionTable, pcvControllers, 1, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight));
+        if (pcvControllers[0].photoCellOrientation == PhotoCellOrientationPortrait) {
+            const CGFloat photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
+            const CGFloat photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
+            const CGFloat xOffset = photoCellWidth + (kPhotoMargin * 2);
+
+			suggestionTable = @{@(pcvControllers[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight)],
+								@(pcvControllers[1].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight)]};
+		} else {
+            const CGFloat photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
+            const CGFloat photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
+            const CGFloat yOffset = photoCellHeight + (kPhotoMargin * 2);
+
+			suggestionTable = @{@(pcvControllers[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight)],
+								@(pcvControllers[1].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight)]};
+		}
     } else if (photoCount == 3) {
         NSMutableArray<PhotoCellViewController *> *landscapeArray = [NSMutableArray array];
         NSMutableArray<PhotoCellViewController *> *portraitArray = [NSMutableArray array];
 
         for (PhotoCellViewController *pcvController in pcvControllers) {
-            if (pcvController.photoCellOrientation == kPhotoCellOrientationLandscape) {
+            if (pcvController.photoCellOrientation == PhotoCellOrientationLandscape) {
                 [landscapeArray addObject:pcvController];
             } else {
                 [portraitArray addObject:pcvController];
             }
         }
 
-        NSUInteger landscapeCount = landscapeArray.count;
-        NSUInteger portraitCount = portraitArray.count;
+        const NSUInteger landscapeCount = landscapeArray.count;
+        const NSUInteger portraitCount = portraitArray.count;
         if (landscapeCount > portraitCount) {
             if (landscapeCount == 3) {
                 [portraitArray addObject:landscapeArray[2]];
                 [landscapeArray removeObjectAtIndex:2];
             }
             
-            photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
+            const CGFloat photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
             
-            photoCellHeight = NSHeight(self.bounds) - (2 * kPhotoMargin);
-            setSuggestion(suggestionTable, portraitArray, 0, NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight));
-            
-            photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
-            xOffset = photoCellWidth + (kPhotoMargin * 2);
-            yOffset = photoCellHeight + (kPhotoMargin * 2);
-            setSuggestion(suggestionTable, landscapeArray, 0, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
-            setSuggestion(suggestionTable, landscapeArray, 1, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight));
+            const CGFloat photoCellHeightFull = NSHeight(self.bounds) - (2 * kPhotoMargin);
+            const CGFloat photoCellHeightHalf = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
+
+			const CGFloat xOffset = photoCellWidth + (kPhotoMargin * 2);
+            const CGFloat yOffset = photoCellHeightHalf + (kPhotoMargin * 2);
+
+			suggestionTable = @{@(portraitArray[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeightFull)],
+								@(landscapeArray[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin + yOffset, photoCellWidth, photoCellHeightHalf)],
+								@(landscapeArray[1].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeightHalf)]};
         } else {
             if (portraitCount == 3) {
                 [landscapeArray addObject:portraitArray[2]];
                 [portraitArray removeObjectAtIndex:2];
             }
             
-            photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
-            yOffset = photoCellHeight + (kPhotoMargin * 2);
+            const CGFloat photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
+            const CGFloat yOffset = photoCellHeight + (kPhotoMargin * 2);
             
-            photoCellWidth = NSWidth(self.bounds) - (2 * kPhotoMargin);
-            [landscapeArray[0] view].frame = NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight);
-            setSuggestion(suggestionTable, landscapeArray, 0, NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
-            
-            photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
-            xOffset = photoCellWidth + (kPhotoMargin * 2);
-            setSuggestion(suggestionTable, portraitArray, 0, NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight));
-            setSuggestion(suggestionTable, portraitArray, 1, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight));
+            const CGFloat photoCellWidthFull = NSWidth(self.bounds) - (2 * kPhotoMargin);
+
+			const CGFloat photoCellWidthHalf = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
+			const CGFloat xOffset = photoCellWidthHalf + (kPhotoMargin * 2);
+
+			suggestionTable = @{@(landscapeArray[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidthFull, photoCellHeight)],
+								@(portraitArray[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidthHalf, photoCellHeight)],
+								@(portraitArray[1].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidthHalf, photoCellHeight)]};
         }
     } else if (photoCount == 4) {
-        photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
-        photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
-        xOffset = photoCellWidth + (kPhotoMargin * 2);
-        yOffset = photoCellHeight + (kPhotoMargin * 2);
+        const CGFloat photoCellWidth = (NSWidth(self.bounds) - (4 * kPhotoMargin)) / 2;
+        const CGFloat photoCellHeight = (NSHeight(self.bounds) - (4 * kPhotoMargin)) / 2;
+        const CGFloat xOffset = photoCellWidth + (kPhotoMargin * 2);
+        const CGFloat yOffset = photoCellHeight + (kPhotoMargin * 2);
         
-        setSuggestion(suggestionTable, pcvControllers, 0, NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
-        setSuggestion(suggestionTable, pcvControllers, 1, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight));
-        setSuggestion(suggestionTable, pcvControllers, 2, NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight));
-        setSuggestion(suggestionTable, pcvControllers, 3, NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight));
+        suggestionTable = @{@(pcvControllers[0].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight)],
+							@(pcvControllers[1].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin + yOffset, photoCellWidth, photoCellHeight)],
+							@(pcvControllers[2].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin, kPhotoMargin, photoCellWidth, photoCellHeight)],
+							@(pcvControllers[3].hash): [NSValue valueWithRect:NSMakeRect(kPhotoMargin + xOffset, kPhotoMargin, photoCellWidth, photoCellHeight)]};
     } else {
         assert(!"Too few or too many PhotoCellViewControllers!. I can only deal with 1-4 of them");
     }
@@ -234,10 +229,10 @@ static void setSuggestion(NSMapTable *suggestionTable, NSArray<PhotoCellViewCont
 
 - (void)layoutPhotos {
 
-    NSMapTable *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:self.photoCellViewControllers];
+    NSDictionary<NSNumber *, NSValue *> *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:self.photoCellViewControllers];
 
     for (PhotoCellViewController *pcvController in self.photoCellViewControllers) {
-        pcvController.view.frame = [[suggestionTable objectForKey:pcvController] rectValue];
+        pcvController.view.frame = suggestionTable[@(pcvController.hash)].rectValue;
     }
 }
 
@@ -254,7 +249,7 @@ static void setSuggestion(NSMapTable *suggestionTable, NSArray<PhotoCellViewCont
 
     // Create new Photo Cell View Controllers from the image files found on the pasteboard.
     for (NSURL *url in pasteboardURLs) {
-        PhotoCellViewController *pcvController = [PhotoCellViewController photoCellViewControllerWithURL:url];
+        PhotoCellViewController *pcvController = [[PhotoCellViewController alloc] initWithURL:url];
         [newCellViewControllers addObject:pcvController];
     }
     
@@ -300,7 +295,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     if (self.draggingPcvController) {
         // Get the URL of the Photo. This URL will be placed on the dragging pasteboard for us.
         NSDictionary *properties = self.draggingPcvController.representedObject;
-        NSURL *imageURL = properties[kImageUrlKey];
+        NSURL *imageURL = properties[/*kImageUrlKey*/@"imageURL"]; // TODO fix once we're fully Swift
         
         // We want a private dragging type so nothing accepts the drop. This way, as the drag source, we can fake an accept drop when creating a new window
         NSPasteboardItem *pbItem = [NSPasteboardItem new];
@@ -460,12 +455,12 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     */
     NSArray<PhotoCellViewController *> *newCellViewControllers = [self viewControllersFromPasteboard:sender.draggingPasteboard];
     NSArray<PhotoCellViewController *> *controllersForLayout = [self combinedViewControllersForLayoutWithViewController:newCellViewControllers];
-    NSMapTable *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
+    NSDictionary<NSNumber *, NSValue *> *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
     
     /* We now have a collection of new Photo Cell View Controllers and a table of suggested frames. At this point, set the frames of the new Photo Cell View Controllers' views. We also adjust the frame proportionally from the suggestion so we don't end up with extremely large drag images. The views of the Photo Cell View Controllers have not been added to this view (or any window), so we can change their frames without affecting the currenlty visible Photos in this view.
     */
     for (PhotoCellViewController *pcvController in newCellViewControllers) {
-        NSRect newFrame = [[suggestionTable objectForKey:pcvController] rectValue];
+        NSRect newFrame = suggestionTable[@(pcvController.hash)].rectValue;
         newFrame.size.width *= kMaxDragWidth / NSHeight(newFrame);
         newFrame.size.height = kMaxDragWidth;
         pcvController.view.frame = newFrame;
@@ -479,12 +474,10 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     /* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationClearNonenumeratedImages will do the hiding of the non acceptable file for us.
     */
     [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:@[[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
-        NSURL *url = (NSURL *)draggingItem.item;
-        
         // The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
         PhotoCellViewController *pcvController;
         for (PhotoCellViewController *controller in newCellViewControllers) {
-            if ([controller.representedObject[kImageUrlKey] isEqualTo:url]) {
+            if ([controller isEqualToDraggingItem:draggingItem]) {
                 pcvController = controller;
                 break;
             }
@@ -532,13 +525,13 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
      */
     NSArray<PhotoCellViewController *> *newCellViewControllers = [self viewControllersFromPasteboard:sender.draggingPasteboard];
     NSArray<PhotoCellViewController *> *controllersForLayout = [self combinedViewControllersForLayoutWithViewController:newCellViewControllers];
-    NSMapTable *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
+    NSDictionary<NSNumber *, NSValue *> *suggestionTable = [self suggestedLayoutForPhotoCellViewControllers:controllersForLayout];
 
     NSUInteger exisingCellViewCount = self.photoCellViewControllers.count;
     if (exisingCellViewCount > 0 && (exisingCellViewCount + newCellViewControllers.count) <= 4) {
         // Animate the existing Photos to their new layout position
         for (PhotoCellViewController *pcvController in self.photoCellViewControllers) {
-            pcvController.view.animator.frame = [[suggestionTable objectForKey:pcvController] rectValue];
+            pcvController.view.animator.frame = suggestionTable[@(pcvController.hash)].rectValue;
         }
     } else {
         // Animate the existing Photos out
@@ -550,7 +543,7 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     
     // Set the new Photo Views to their final frames. These views have not been added to the window yet, so visually nothing will happen. We set the dragging items to these frame so that the drag animates to the correct place. (See -concludeDragOperation: for how / when we add these views as subviews.)
     for (PhotoCellViewController *pcvController in newCellViewControllers) {
-        pcvController.view.frame = [[suggestionTable objectForKey:pcvController] rectValue];
+        pcvController.view.frame = suggestionTable[@(pcvController.hash)].rectValue;
     }
     
     // Update our model data
@@ -564,13 +557,10 @@ static NSString * const kPrivateDragUTI = @"com.apple.private.MultiPhotoViewNewW
     /* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationClearNonenumeratedImages will do the hiding of the non acceptable file for us.
      */
     [sender enumerateDraggingItemsWithOptions:NSDraggingItemEnumerationClearNonenumeratedImages forView:self classes:@[[NSURL class]] searchOptions:searchOptions usingBlock:^(NSDraggingItem *draggingItem, NSInteger idx, BOOL *stop) {
-        
-        NSURL *url = (NSURL *)draggingItem.item;
-        
         // The collection of new Photo Cell View Controllers contain all the information we need, but we need to correlate which Photo Cell View Controller is associated with this pasteboard item.
         PhotoCellViewController *pcvController;
         for (PhotoCellViewController *controller in newCellViewControllers) {
-            if ([controller.representedObject[kImageUrlKey] isEqualTo:url]) {
+            if ([controller isEqualToDraggingItem:draggingItem]) {
                 pcvController = controller;
                 break;
             }
