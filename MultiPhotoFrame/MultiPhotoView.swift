@@ -517,7 +517,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 		return true
 	}
 
-	/* In this method we need to update our data model with the drag contents, tell the drag info where to animate the dragging items and setup animating the exisiting photos. Before this method is called, an NSAnimationContext is already setup with correct duration to match the drop animation of the dragging items.
+	/* In this method we need to update our data model with the drag contents, tell the drag info where to animate the dragging items and setup animating the existing photos. Before this method is called, an NSAnimationContext is already setup with correct duration to match the drop animation of the dragging items.
 	*/
 	override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
 
@@ -554,7 +554,7 @@ class MultiPhotoView: NSView, NSDraggingSource {
 
 		// By using the search options, we can have NSPasteboard narrow the search for us. In this case, we only want files that are images.
 		let searchOptions: [String: Any] = [NSPasteboardURLReadingFileURLsOnlyKey: true, NSPasteboardURLReadingContentsConformToTypesKey: [kUTTypeImage]]
-		/* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumeration.clearNonenumeratedImages will do the hiding of the non acceptable file for us.
+		/* The drag may contain files that are not images. We don't accept those files so we hide them. But, our enumeration block is only called for the files we accept. The NSDraggingItemEnumerationOptions.clearNonenumeratedImages will do the hiding of the non acceptable file for us.
 		*/
 		sender.enumerateDraggingItems(options: [.clearNonenumeratedImages], for: self, classes: [NSURL.self], searchOptions: searchOptions) { (draggingItem, idx, stop) in
 			guard let url = draggingItem.item as? URL else {
